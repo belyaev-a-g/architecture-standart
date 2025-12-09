@@ -1,0 +1,68 @@
+@startuml
+!include <C4/C4_Container>
+
+title Интернет-банк - Открытие депозитов онлайн
+
+Person(user, "Пользователь", "Клиент банка")
+Person(manager, "Менеджер бэк-офиса", "Сотрудник банка")
+Person(callManager, "Менеджер кол-центра", "Сотрудник банка")
+
+
+Boundary(bankSystem, "Банковская система") {
+    Container(callCentre, "Система кол-центра", "Java Spring Boot")
+    ContainerDb(callCentreDb, "БД кол-центра", "PostgreSQL")
+    ContainerDb(callCentreWeb, "Web кол-центра", "React.js")
+    Container(webSite, "Сайт банка", "javascript, ReactJS", "Сайт банка")
+
+Boundary(internetBank, "Internet Bank", "Интернет-банк") {
+    Container(web, "Internet Bank", "ASP.NET MVC 4.5",  "Веб-сервер")
+    Container(apiGateway, "Сервис ApiGateway", "",  "Аутентификация, маршрутизация, балансировка")
+    Container(monolit, "Internet Bank Monolit", "ASP.NET MVC 4.5",  "Монолит на платформе подрядчика")
+    Container(deposit, "Сервис депозитов", "go",  "Микросервис для работы с депозитами")
+    ContainerDb(dbIB, "База данных", "MS SQL")
+}
+
+Container(kafka, "Сервис очереди событий", "Kafka", "Предоставляет функционал для передачи событий")
+
+Boundary(absSystem, "АБС", "Автоматизированная банковская система") {
+    Container(abs, "АБС", "Автоматизированная банковская система")
+    Container(absClient, "Клиент АБС", "Delphi", "Клиент АБС")
+    Container(absDep, "АБС Deposit Service", "go", "Микросервис для работы с депозитами")
+    ContainerDb(dbABS, "База данных АБС", "Oracle")
+}
+
+System(smsgateway, "СМС-шлюз телеком опeратора")
+}
+
+System_Ext(telecom, "Система телеком опeратора",)
+
+
+Rel(user, web, "Авторизация/Просмотр страницы с депозитами/Подача заявки")
+Rel(user, webSite, "Создаёт заявку на депозит")
+Rel(web, apiGateway, "Чтение/Отправка данных", "JSON/HTTPs")
+Rel(apiGateway, monolit, "Авторизация", "JSON/HTTPs")
+Rel(apiGateway, deposit, "Чтение данных по депозитам/Отправка заявки на открытие", "JSON/HTTPs")
+
+Rel(monolit, smsgateway, "Отправка СМС", "JSON/HTTPs")
+Rel(callManager, callCentreWeb, "Обрабатывает заявки")
+Rel(callCentreWeb, callCentre, "Обрабатывает заявки")
+Rel(callCentre, callCentreDb, "Чтение/Изменение данных")
+Rel(monolit, dbIB, "Чтение данных")
+Rel(smsgateway, telecom, "Отправка СМС")
+
+Rel(abs, telecom, "Отправка СМС")
+Rel(webSite, callCentre, "Создание заявки")
+
+Rel(deposit, dbIB, "Чтение актуальных ставок")
+Rel(abs, dbIB, "Публикация актуальных ставок")
+Rel(deposit, kafka, "Создание заявки на открытие депозита", "JSON")
+Rel(callCentre, kafka, "Передаёт заявку на открытие депозита", "kafka message")
+Rel(absDep, kafka, "Чтение заявок на открытие депозита", "JSON")
+Rel(absDep, dbABS, "Создание заявки на открытие депозита", "JSON")
+Rel(abs, dbABS, "Чтение/Изменение данных")
+
+Rel(manager, absClient, "Обработка заявки на открытие депозита")
+Rel(absClient, abs, "Запросы", "JSON/HTTPS")
+
+@enduml
+

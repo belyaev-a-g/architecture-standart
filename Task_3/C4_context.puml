@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Context>
+
+title Открытие депозитов онлайн
+
+Person(user, "Пользователь", "Клиент банка")
+Person(backManager, "Менеджер бэк-офиса", "Сотрудник банка")
+Person(callManager, "Менеджер кол-центра", "Сотрудник банка")
+
+System(internetBank, "Internet Bank")
+System(abs, "АБС", "Автоматизированная банковская система")
+System(callCentre, "Кол-центр", "Кол-центр")
+
+System_Ext(telecom, "Система телеком опратора")
+
+Rel(user, internetBank, "Авторизация/Просмотр страницы с депозитами/Подача заявки")
+Rel(internetBank, telecom, "Отправка СМС")
+Rel(abs, telecom, "Отправка СМС")
+Rel(telecom, user, "Отправка СМС")
+
+Rel(abs, internetBank, "Публикация актуальных ставок")
+Rel(internetBank, abs, "Создание заявки на открытие депозита")
+Rel(internetBank, callCentre, "Создание заявки на открытие депозита")
+Rel(backManager, abs, "Обработка заявки на открытие депозита")
+Rel(callManager, callCentre, "Обработка заявки на открытие депозита")
+Rel(callManager, user, "Подтверждение данных на открытие депозита. Приглашение на идентификацию")
+
+@enduml

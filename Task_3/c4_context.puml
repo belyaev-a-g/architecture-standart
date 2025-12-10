@@ -11,7 +11,7 @@ System(internetBank, "Internet Bank")
 System(abs, "АБС", "Автоматизированная банковская система")
 System(callCentre, "Кол-центр", "Кол-центр")
 
-System_Ext(telecom, "Система телеком опратора")
+System_Ext(telecom, "Система телеком опeратора")
 
 Rel(user, internetBank, "Авторизация/Просмотр страницы с депозитами/Подача заявки")
 Rel(internetBank, telecom, "Отправка СМС")

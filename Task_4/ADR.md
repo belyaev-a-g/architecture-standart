@@ -26,8 +26,8 @@
 Диаграмма контекста
 ![c4-context](c4_context.png)
 
-Диаграмма контейнеров
-![c4-container](c4_container.png)
+Диаграмма компонентов  
+![c4-component](c4_component.png)
 
 Обоснование:
 
